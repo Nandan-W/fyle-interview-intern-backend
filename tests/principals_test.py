@@ -60,3 +60,52 @@ def test_regrade_assignment(client, h_principal):
 
     assert response.json['data']['state'] == AssignmentStateEnum.GRADED.value
     assert response.json['data']['grade'] == GradeEnum.B
+
+def test_regrade_assignment_with_unallowed_grade(client, h_principal):
+    response = client.post(
+        '/principal/assignments/grade',
+        json={
+            'id': 4,
+            'grade': 'E'
+        },
+        headers=h_principal
+    )
+
+    assert response.status_code == 200
+
+    assert response.json['data']['state'] == AssignmentStateEnum.GRADED.value
+    assert response.json['data']['grade'] == GradeEnum.B
+
+def test_regrade_assignment_which_is_not_available(client, h_principal):
+    response = client.post(
+        '/principal/assignments/grade',
+        json={
+            'id': 450,
+            'grade': GradeEnum.B.value
+        },
+        headers=h_principal
+    )
+
+    assert response.status_code == 200
+
+    assert response.json['data']['state'] == AssignmentStateEnum.GRADED.value
+    assert response.json['data']['grade'] == GradeEnum.B
+
+def test_list_teachers(client, h_principal):
+    """Test listing all teachers"""
+    response = client.get(
+        '/principal/teachers',
+        headers=h_principal
+    )
+
+    assert response.status_code == 200
+
+    data = response.json['data']
+    assert isinstance(data, list)
+    
+    if data:
+        for teacher in data:
+            assert 'id' in teacher
+            assert 'user_id' in teacher
+            assert 'created_at' in teacher
+            assert 'updated_at' in teacher
