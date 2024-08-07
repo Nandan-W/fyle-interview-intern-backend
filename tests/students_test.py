@@ -105,11 +105,30 @@ def test_submit_assignment_student_1(client, h_student_1):
 
 
 def test_assignment_resubmit_error(client, h_student_1):
+    # First, create a draft assignment
+    response = client.post(
+        '/student/assignments',
+        headers=h_student_1,
+        json={'content': 'Assignment to submit'}
+    )
+    assert response.status_code == 200
+    draft_assignment = response.json['data']
+    assignment_id = draft_assignment['id']
+    
+    # Submit the created draft assignment
+    response = client.post(
+        '/student/assignments/submit',
+        headers=h_student_1,
+        json={'id': assignment_id, 'teacher_id': 2}
+    )
+    assert response.status_code == 200
+
+    #resubmit the submitted assignment
     response = client.post(
         '/student/assignments/submit',
         headers=h_student_1,
         json={
-            'id': 2,
+            'id': assignment_id,
             'teacher_id': 2
         })
     error_response = response.json
