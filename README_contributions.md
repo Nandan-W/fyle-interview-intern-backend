@@ -97,5 +97,3 @@ This document outlines the objectives assigned to me for the project.
     docker-compose down
     ```
 
-### Running Tests
-
