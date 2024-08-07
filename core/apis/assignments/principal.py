@@ -42,7 +42,6 @@ def grade_or_regrade_assignment(p, incoming_payload):
     new_grade = incoming_payload.get('grade')
 
 
-    # Ensure 'grade' is valid and exists in GradeEnum
     if new_grade not in GradeEnum.__members__:
         return APIResponse.respond(error='Invalid grade', message='Grade must be one of {}'.format(list(GradeEnum.__members__.keys())), status_code=400)
 
@@ -50,13 +49,10 @@ def grade_or_regrade_assignment(p, incoming_payload):
     if not assignment:
         return APIResponse.respond(error='Assignment not found', status_code=404)
 
-    if assignment.state == AssignmentStateEnum.DRAFT:
+    if assignment.state != AssignmentStateEnum.GRADED.value:
         return APIResponse.respond(error='Assignment is still in draft state and cannot be graded', status_code=400)
     
-    # Assign new grade and update state
     assignment.grade = new_grade
-    if assignment.state == AssignmentStateEnum.SUBMITTED:
-        assignment.state = AssignmentStateEnum.GRADED
     db.session.commit()
 
     assignment_dump = AssignmentSchema().dump(assignment)

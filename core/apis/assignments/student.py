@@ -2,7 +2,7 @@ from flask import Blueprint
 from core import db
 from core.apis import decorators
 from core.apis.responses import APIResponse
-from core.models.assignments import Assignment
+from core.models.assignments import Assignment, AssignmentStateEnum
 
 from .schema import AssignmentSchema, AssignmentSubmitSchema
 student_assignments_resources = Blueprint('student_assignments_resources', __name__)
@@ -22,8 +22,15 @@ def list_assignments(p):
 @decorators.authenticate_principal
 def upsert_assignment(p, incoming_payload):
     """Create or Edit an assignment"""
+    if incoming_payload.get('content') is None:
+        return APIResponse.respond(
+            error='Content cannot be null',
+            status_code=400
+        )
+
     assignment = AssignmentSchema().load(incoming_payload)
     assignment.student_id = p.student_id
+    assignment.state = AssignmentStateEnum.DRAFT  # Ensuring the state is set to DRAFT
 
     upserted_assignment = Assignment.upsert(assignment)
     db.session.commit()
@@ -36,8 +43,18 @@ def upsert_assignment(p, incoming_payload):
 @decorators.authenticate_principal
 def submit_assignment(p, incoming_payload):
     """Submit an assignment"""
+    
+    if not incoming_payload.get('id') or not incoming_payload.get('teacher_id'):
+        return APIResponse.respond( error='Invalid input',message= 'missing fields',status_code=400)
+
     submit_assignment_payload = AssignmentSubmitSchema().load(incoming_payload)
 
+    # Ensure the assignment is in draft state before submission
+    assignment = Assignment.get_by_id(submit_assignment_payload.id)
+    if assignment.state != AssignmentStateEnum.DRAFT:
+        return APIResponse.respond(error='FyleError',message='only a draft assignment can be submitted', status_code=400)
+
+    assignment.state = AssignmentStateEnum.SUBMITTED
     submitted_assignment = Assignment.submit(
         _id=submit_assignment_payload.id,
         teacher_id=submit_assignment_payload.teacher_id,
