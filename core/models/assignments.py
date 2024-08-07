@@ -90,30 +90,7 @@ class Assignment(db.Model):
         return cls.filter(cls.student_id == student_id).all()
 
     @classmethod
-    def get_assignments_by_teacher(cls):
-        return cls.query.all()
+    def get_assignments_by_teacher(cls,teacher_id):
+        return cls.filter(cls.teacher_id == teacher_id ,cls.state != AssignmentStateEnum.DRAFT.value).all()
 
-
-
-    @classmethod
-    def get_all_teachers(cls):
-        """Principal's Functionality :: Fetch all teachers."""
-        return Teacher.query.all()
-
-    @classmethod
-    def get_all_assignments(cls):
-        """Principal's Functionality :: Fetch all assignments."""
-        return cls.query.all()
-    
-    @classmethod
-    def regrade_assignment(cls, _id, new_grade, auth_principal: AuthPrincipal):
-        """Principal's Functionality :: Allow principal to re-grade an assignment."""
-        assignment = cls.get_by_id(_id)
-        assertions.assert_found(assignment, 'No assignment with this id was found')
-        assertions.assert_valid(auth_principal.principal_id is not None, 'Principal not authenticated')
-        assertions.assert_valid(assignment.state == AssignmentStateEnum.GRADED, 'Assignment must be graded to re-grade')
-        assignment.grade = new_grade
-        db.session.flush()
-        return assignment
-
-
+   
