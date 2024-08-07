@@ -1,0 +1,87 @@
+# Ignore SQLite database
+core/store.sqlite3
+
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ignore virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Ignore build and packaging files
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Ignore test and coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Ignore IDE and editor settings
+.idea/
+.spyderproject
+.spyproject
+.ropeproject
+
+# Ignore documentation builds
+docs/_build/
+
+# Ignore Jupyter and IPython files
+.ipynb_checkpoints/
+profile_default/
+ipython_config.py
+
+# Ignore Pyenv files
+.python-version
+
+# Ignore Pipenv and Pyflow files
+Pipfile.lock
+__pypackages__/
+
+# Ignore Celery files
+celerybeat-schedule
+celerybeat.pid
+
+# Ignore SageMath files
+*.sage.py
+
+# Ignore Sphinx and Mkdocs documentation
+/site
+
+# Ignore type checkers and static analysis tools
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
